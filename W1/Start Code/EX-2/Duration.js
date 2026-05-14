@@ -20,7 +20,12 @@ class Duration {
    */
   constructor(seconds = 0) {
     // YOUR CODE
-    this._totalSeconds = seconds;   
+    // Validation for seconds in case it isn't a finite number
+    const s = Number(seconds);
+    if (!Number.isFinite(s)) {
+      throw new TypeError("Duration seconds must be a finite number");
+    }
+    this._totalSeconds = s;   
   }
 
   /**
@@ -31,7 +36,13 @@ class Duration {
    */
   static fromMinutesAndSeconds(minutes = 0, seconds = 0) {
     // YOUR CODE
-    return new Duration(minutes * 60 + seconds);
+    const m = Number(minutes);
+    const s = Number(seconds);
+    // Validation for minutes and seconds in case it aren't finite numbers
+    if (!Number.isFinite(m) || !Number.isFinite(s)) {
+      throw new TypeError("Duration minutes/seconds must be finite numbers");
+    }
+    return new Duration(m * 60 + s);
   }
 
   /**
@@ -45,6 +56,11 @@ class Duration {
   };
 
   // YOUR COMMENT
+  /**
+   * Returns a new Duration by subtracting another duration (stop at 0).
+   * @param {Duration} other - Another duration to subtract.
+   * @returns {Duration} A new Duration representing the difference.
+   */
   minus = (other) => {
          // YOUR CODE
          return new Duration(this._totalSeconds - other._totalSeconds);

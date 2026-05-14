@@ -1,6 +1,7 @@
 
 import { Duration } from "../model/Duration.js";
 import { RaceResult } from "../model/RaceResult.js";
+import fs from 'fs';
 
 /**
  * This class handle the race results management system.
@@ -19,10 +20,14 @@ export class RaceResultsService {
 
   /**
    * Adds a new race result to the race list.
-   * @param {RaceResult} result - The prace result.
+   * @param {RaceResult} result - The race result.
    */
   addRaceResult(result) {
     // TODO
+    if (!(result instanceof RaceResult)) {
+      throw new TypeError("addRaceResult expects a RaceResult");
+    }
+    this._raceResults.push(result);
   }
 
   /**
@@ -31,6 +36,8 @@ export class RaceResultsService {
    */
   saveToFile(filePath) {
     // TODO
+    const json = JSON.stringify(this._raceResults, null, 2);
+    fs.writeFileSync(filePath, json, "utf-8");
   }
 
   /**
@@ -40,6 +47,19 @@ export class RaceResultsService {
    */
   loadFromFile(filePath) {
     // TODO
+    try {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return false;
+      }
+
+      this._raceResults = parsed.map((x) => RaceResult.fromJSON(x));
+      return true;
+    } catch {
+      console.log("Process failed!!")
+      return false;
+    }
   }
 
   /**
@@ -49,7 +69,11 @@ export class RaceResultsService {
    * @returns {Duration|null} Duration if found, else null.
    */
   getTimeForParticipant(participantId, sport) {
-       // TODO
+    //TODO
+    const found = this._raceResults.find(
+      (r) => r.participantId === participantId && r.sport === sport,
+    );
+    return found ? found.time : null;
   }
 
   /**
@@ -58,6 +82,12 @@ export class RaceResultsService {
    * @returns {Duration|null} The total Duration object if found, otherwise null.
    */
   getTotalTimeForParticipant(participantId) {
-        // TODO
+    // TODO
+    const matches = this._raceResults.filter((r) => r.participantId === participantId);
+    if (matches.length === 0) {
+      return Duration.fromSeconds(0);
+    }
+
+    return matches.reduce((acc, r) => acc.plus(r.time), Duration.fromSeconds(0));
   }
 }

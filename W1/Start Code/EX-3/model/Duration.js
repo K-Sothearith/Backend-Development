@@ -20,7 +20,21 @@ class Duration {
    */
   constructor(seconds = 0) {
     // YOUR CODE
-    this._totalSeconds = seconds;   
+    // Validation for seconds in case it isn't a finite number
+    const s = Number(seconds);
+    if (!Number.isFinite(s)) {
+      throw new TypeError("Duration seconds must be a finite number");
+    }
+    this._totalSeconds = s;
+  }
+
+  /**
+   * Creates a new Duration from a number of seconds.
+   * @param {number} [seconds=0] - The number of seconds.
+   * @returns {Duration} A new Duration instance.
+   */
+  static fromSeconds(seconds = 0) {
+    return new Duration(seconds);
   }
 
   /**
@@ -30,8 +44,13 @@ class Duration {
    * @returns {Duration} A new Duration instance.
    */
   static fromMinutesAndSeconds(minutes = 0, seconds = 0) {
-    // YOUR CODE
-    return new Duration(minutes * 60 + seconds);
+    const m = Number(minutes);
+    const s = Number(seconds);
+    // Validation for minutes and seconds in case it aren't finite numbers
+    if (!Number.isFinite(m) || !Number.isFinite(s)) {
+      throw new TypeError("Duration minutes/seconds must be finite numbers");
+    }
+    return new Duration(m * 60 + s);
   }
 
   /**
@@ -40,24 +59,36 @@ class Duration {
    * @returns {Duration} A new Duration representing the sum.
    */
   plus = (other) => {
-         // YOUR CODE
-         return new Duration(this._totalSeconds + other._totalSeconds);
+    // YOUR CODE
+    return new Duration(this._totalSeconds + other._totalSeconds);
   };
 
-  // YOUR COMMENT
+  /**
+   * Returns a new Duration by subtracting another duration (floored at 0).
+   * @param {Duration} other - Another duration to subtract.
+   * @returns {Duration} A new Duration representing the difference.
+   */
   minus = (other) => {
-         // YOUR CODE
-         return new Duration(this._totalSeconds - other._totalSeconds);
+    // YOUR CODE
+    return new Duration(this._totalSeconds - other._totalSeconds);
   };
+
+  /**
+   * Total duration in seconds.
+   * @returns {number}
+   */
+  get totalSeconds() {
+    return this._totalSeconds;
+  }
 
   /**
    * Converts the duration into a human-readable string, e.g., "2m 30s".
    * @returns {string} The formatted duration string.
    */
   toString = () => {
-        // YOUR CODE
-        const minutes = Math.floor(this._totalSeconds / 60);
-        const seconds = this._totalSeconds % 60;
-        return `${minutes}m ${seconds}s`;
+    // YOUR CODE
+    const minutes = Math.floor(this._totalSeconds / 60);
+    const seconds = this._totalSeconds % 60;
+    return `${minutes}m ${seconds}s`;
   };
 }
